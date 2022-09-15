@@ -1,0 +1,51 @@
+#version 330
+
+
+// Shader Designed based off of the tutorial found at https://faculty.washington.edu/joelross/courses/archive/f14/cs315/lab/toon/
+
+in vec3 normal;
+//in vec3 lightDir;
+in vec3 pos;
+
+
+vec3 LightPosition = vec3 (5.0, 10.0, 5.0); // Light position in world coords.
+
+//uniform vec3 objectColor;
+vec3 diffuse_colour = vec3(1.0, 0.0, 0.0); 
+
+//uniform vec3 LightPosition;
+vec3 lightDir;
+
+void main(){
+
+    lightDir = normalize(vec3(LightPosition - pos));
+    
+    float i_diffuse, i_specular, i_ambient;
+    float intensity;
+    vec3 n;
+    vec3 viewDir = normalize(-pos);
+    vec3 refDir = normalize(-reflect(lightDir, normal));
+
+    vec4 color;
+    n = normalize(normal);
+
+    intensity = dot(lightDir, normal);
+
+    if (intensity > 0.95)
+        color = vec4(0.14, 0.92, 0.27, 1.0);
+    else if (intensity > 0.5)
+        color = vec4(0.15, 0.83, 0.27, 1.0);
+    else if (intensity > 0.25)
+        color = vec4(0.0, 0.5, 0.13, 1.0);
+    else 
+        color = vec4(0.0, 0.2, 0.0, 1.0);
+
+    // Draw the outline of the model
+    if (dot(viewDir, n) < 0.25) 
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    else if (pow( dot(refDir, viewDir), 128) > 0.5)
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    
+    else
+        gl_FragColor = color;
+}
